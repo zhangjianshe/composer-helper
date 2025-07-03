@@ -1,0 +1,57 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:t="urn:import:cn.cangling.docker.composer.client.composer.editor"
+>
+    <ui:style>
+        .box {
+            background-color: green;
+        }
+
+        .list {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 1rem;
+        }
+
+        .left {
+            background-color: #f0f0f0;
+        }
+
+        .toobar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        .btn{
+            width: 36px;
+            height: 36px;
+            overflow: hidden;
+            padding: 5px;
+        }
+        .btn:HOVER{
+            background-color: skyblue;
+        }
+    </ui:style>
+    <g:DockLayoutPanel ui:field="root">
+        <g:west size="300">
+            <g:ScrollPanel addStyleNames="{style.left}">
+                <g:HTMLPanel ui:field="list" addStyleNames="{style.list}">
+
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:west>
+        <g:north size="50">
+            <g:HTMLPanel addStyleNames="{style.toobar}">
+                <g:Image ui:field="btnOpen" addStyleNames="{style.btn}"/>
+                <g:Image ui:field="btnSave" addStyleNames="{style.btn}"/>
+            </g:HTMLPanel>
+        </g:north>
+        <g:center>
+                <t:ComposerEditor ui:field="editor" addStyleNames="{style.box}"/>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
