@@ -1,4 +1,3 @@
-
 name: Deploy GWT App to GitHub Pages
 
 on:
@@ -6,15 +5,12 @@ on:
     branches:
       - main # Or your default branch like 'master'
   workflow_dispatch: # Allows manual triggering of the workflow
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: write # Required to push to the gh-pages branch or update pages
-      pages: write    # Required to deploy to GitHub Pages
-      id-token: write # Required for OIDC authentication with GitHub Pages
-
+      contents: read # Only read permission needed for building
     steps:
       - name: Checkout code
         uses: actions/checkout@v4 # Uses the latest version of the checkout action
@@ -35,19 +31,23 @@ jobs:
 
       - name: Build GWT project with Maven
         run: mvn clean compile gwt:compile package install
-                               
 
       - name: Locate GWT output directory
         id: gwt_output
         run: |
+          # Determine the GWT output directory.
+          # For a typical GWT Maven project, this is often target/<your-module-name>
+          # or target/classes/static, depending on your pom.xml configuration.
+          # You might need to adjust this path based on your actual build output.
           GWT_OUTPUT_DIR="target/classes/static"
-  
+
           # Verify the directory exists
           if [ -d "$GWT_OUTPUT_DIR" ]; then
             echo "GWT build output found at: $GWT_OUTPUT_DIR"
             echo "PUBLISH_DIR=$GWT_OUTPUT_DIR" >> $GITHUB_ENV
           else
             echo "Error: GWT output directory '$GWT_OUTPUT_DIR' not found."
+            echo "Please check your GWT Maven build output path."
             exit 1
           fi
 
@@ -56,9 +56,16 @@ jobs:
         with:
           path: ${{ env.PUBLISH_DIR }} # Use the determined GWT output directory
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4 # Uses the official GitHub Pages deployment action
   deploy:
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # Set the URL for the environment
+    runs-on: ubuntu-latest
+    needs: build # This job depends on the 'build' job completing successfully
+    permissions:
+      pages: write    # Required to deploy to GitHub Pages
+      id-token: write # Required for OIDC authentication with GitHub Pages
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment # Gives an ID to this step to reference its outputs
+        uses: actions/deploy-pages@v4 # Uses the official GitHub Pages deployment action
