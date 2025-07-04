@@ -96,6 +96,9 @@ public interface ComposerResource extends ClientBundle {
     @Source("docker_helper.svg")
     TextResource dockerHelper();
 
+    @Source("github.svg")
+    TextResource github();
+
     @Source("default_graph.json")
     TextResource defaultGraph();
 

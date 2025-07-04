@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:composer="urn:import:cn.cangling.docker.composer.client.composer">
+             xmlns:composer="urn:import:cn.cangling.docker.composer.client.composer"
+             xmlns:editor="urn:import:cn.cangling.docker.composer.client.composer.editor">
     <ui:style>
         .logo {
             width: 48px;
@@ -13,7 +14,7 @@
         }
 
         .top {
-            background-color:rgba(43,45,86,0.9);
+            background-color: rgba(43, 45, 86, 0.9);
         }
 
         .version {
@@ -26,8 +27,7 @@
             color: #f0f0f0;
         }
 
-        .msg
-        {
+        .msg {
             color: #f0f0f0;
             font-size: 1.1rem;
             font-style: italic;
@@ -44,7 +44,9 @@
                 </g:VerticalPanel>
                 <g:Label ui:field="lbMessage" styleName="{style.msg}"/>
                 <g:cell horizontalAlignment="right">
-                   <g:Anchor href="mailto:zhangjianshe@gmail.com" styleName="{style.link}">zhangjianshe@gmail.com</g:Anchor>
+                    <g:HorizontalPanel>
+                        <editor:SvgButton buttonSize="48" ui:field="github"/>
+                    </g:HorizontalPanel>
                 </g:cell>
             </g:HorizontalPanel>
         </g:north>
