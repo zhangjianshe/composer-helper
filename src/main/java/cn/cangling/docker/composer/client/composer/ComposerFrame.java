@@ -4,12 +4,15 @@ import cn.cangling.docker.composer.client.composer.editor.AlignToolbar;
 import cn.cangling.docker.composer.client.composer.editor.ComposerEditor;
 import cn.cangling.docker.composer.client.composer.editor.FileToolbar;
 import cn.cangling.docker.composer.client.composer.editor.ToolbarCommands;
+import cn.cangling.docker.composer.client.composer.event.GraphEvent;
+import cn.cangling.docker.composer.client.composer.model.YamlGraph;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplates;
 import cn.cangling.docker.composer.client.composer.template.TemplateItem;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
@@ -50,6 +53,14 @@ public class ComposerFrame extends Composite implements RequiresResize {
                 Window.setTitle("graph saved");
                 break;
             }
+            case CMD_ALIGN_TOP:
+            case CMD_ALIGN_LEFT:
+            case CMD_ALIGN_RIGHT:
+            case CMD_ALIGN_BOTTOM:
+            case CMD_ALIGN_CENTER:
+            case CMD_ALIGN_MIDDLE:
+                editor.doAlignCommand(value);
+            default:
         }
     }
 
@@ -72,6 +83,17 @@ public class ComposerFrame extends Composite implements RequiresResize {
             templateItem1.setData(templateItem);
             list.add(templateItem1);
         });
+    }
+
+    @UiHandler("editor")
+    public void editorGraph(GraphEvent event) {
+        switch (event.getEventType()) {
+            case ET_SELECT_CHANGED:
+                YamlGraph graph = event.getData();
+                alignToolbar.enableAll(!graph.getSelectObjectList().isEmpty());
+            case ET_NONE:
+            default:
+        }
     }
 
     interface ComposerFrameUiBinder extends UiBinder<DockLayoutPanel, ComposerFrame> {

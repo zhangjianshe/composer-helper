@@ -30,23 +30,32 @@ public class FileToolbar extends Composite implements HasValueChangeHandlers<Too
 
     private static FileToolbarUiBinder ourUiBinder = GWT.create(FileToolbarUiBinder.class);
     @UiField
-    HTML btnOpen;
+    SvgButton btnOpen;
     @UiField
-    HTML btnSave;
+    SvgButton btnSave;
 
     public FileToolbar() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        btnOpen.setHTML(ComposerResource.INSTANCE.open_svg().getText());
-        btnSave.setHTML(ComposerResource.INSTANCE.save_svg().getText());
+        btnOpen.setSVG(ComposerResource.INSTANCE.open_svg().getText());
+        btnSave.setSVG(ComposerResource.INSTANCE.save_svg().getText());
+        btnSave.setButtonSize(24);
     }
 
     @UiHandler("btnOpen")
     public void btnOpenClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_OPEN);
+        if(btnOpen.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_OPEN);
+        }
     }
 
     @UiHandler("btnSave")
     public void btnSaveClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_SAVE);
+        if(btnSave.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_SAVE);
+        }
+    }
+    public void enableAll(boolean enabled) {
+        btnSave.setEnabled(enabled);
+        btnOpen.setEnabled(enabled);
     }
 }

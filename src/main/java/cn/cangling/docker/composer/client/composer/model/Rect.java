@@ -3,10 +3,10 @@ package cn.cangling.docker.composer.client.composer.model;
 
 
 public class Rect {
-    double x;
-    double y;
-    double width;
-    double height;
+    public double x;
+    public double y;
+    public double width;
+    public double height;
     public Rect(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;

@@ -2,6 +2,7 @@ package cn.cangling.docker.composer.client.composer.editor;
 
 import cn.cangling.docker.composer.client.resource.ComposerResource;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -26,55 +27,76 @@ public class AlignToolbar extends Composite implements HasValueChangeHandlers<To
 
     private static AlignToolbarUiBinder ourUiBinder = GWT.create(AlignToolbarUiBinder.class);
     @UiField
-    HTML btnAlignLeft;
+    SvgButton btnAlignLeft;
     @UiField
-    HTML btnAlignCenter;
+    SvgButton btnAlignCenter;
     @UiField
-    HTML btnAlignRight;
+    SvgButton btnAlignRight;
     @UiField
-    HTML btnAlignTop;
+    SvgButton btnAlignTop;
     @UiField
-    HTML btnAlignMiddle;
+    SvgButton btnAlignMiddle;
     @UiField
-    HTML btnAlignBottom;
+    SvgButton btnAlignBottom;
 
     public AlignToolbar() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        btnAlignLeft.setHTML(ComposerResource.INSTANCE.align_left().getText());
-        btnAlignMiddle.setHTML(ComposerResource.INSTANCE.align_middle().getText());
-        btnAlignRight.setHTML(ComposerResource.INSTANCE.align_right().getText());
-        btnAlignTop.setHTML(ComposerResource.INSTANCE.align_top().getText());
-        btnAlignBottom.setHTML(ComposerResource.INSTANCE.align_bottom().getText());
-        btnAlignCenter.setHTML(ComposerResource.INSTANCE.align_center().getText());
+        btnAlignLeft.setSVG(ComposerResource.INSTANCE.align_left().getText());
+        btnAlignMiddle.setSVG(ComposerResource.INSTANCE.align_middle().getText());
+        btnAlignRight.setSVG(ComposerResource.INSTANCE.align_right().getText());
+        btnAlignTop.setSVG(ComposerResource.INSTANCE.align_top().getText());
+        btnAlignBottom.setSVG(ComposerResource.INSTANCE.align_bottom().getText());
+        btnAlignCenter.setSVG(ComposerResource.INSTANCE.align_center().getText());
     }
 
     @UiHandler("btnAlignLeft")
     public void btnAlignLeftClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_LEFT);
+        if(btnAlignLeft.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_LEFT);
+        }
     }
 
     @UiHandler("btnAlignCenter")
     public void btnAlignCenterClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_CENTER);
+        if(btnAlignCenter.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_CENTER);
+        }
     }
 
     @UiHandler("btnAlignRight")
     public void btnAlignRightClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_RIGHT);
+        if(btnAlignRight.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_RIGHT);
+        }
     }
 
     @UiHandler("btnAlignTop")
     public void btnAlignTopClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_TOP);
+        if (btnAlignTop.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_TOP);
+        }
     }
 
     @UiHandler("btnAlignMiddle")
     public void btnAlignMiddleClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_MIDDLE);
+        if(btnAlignMiddle.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_MIDDLE);
+        }
     }
 
     @UiHandler("btnAlignBottom")
     public void btnAlignBottomClick(ClickEvent event) {
-        ValueChangeEvent.fire(this,ToolbarCommands.CMD_ALIGN_BOTTOM);
+        if(btnAlignBottom.enabled) {
+            ValueChangeEvent.fire(this, ToolbarCommands.CMD_ALIGN_BOTTOM);
+        }
+    }
+
+    public void enableAll(boolean enabled) {
+        btnAlignLeft.setEnabled(enabled);
+        btnAlignBottom.setEnabled(enabled);
+        btnAlignCenter.setEnabled(enabled);
+        btnAlignMiddle.setEnabled(enabled);
+        btnAlignRight.setEnabled(enabled);
+        btnAlignTop.setEnabled(enabled);
     }
 }

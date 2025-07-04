@@ -5,8 +5,6 @@ import elemental2.dom.DOMRect;
 import elemental2.dom.HTMLCanvasElement;
 import elemental2.dom.MouseEvent;
 
-import java.util.List;
-
 /**
  * 缺省的鼠标行为 点击选择
  */
@@ -62,7 +60,7 @@ public class DefaultMouseAction implements IMouseAction{
                 case HT_OBJECT:
                     isDown = true;
                     graph.clearSelected();
-                    graph.appendSelectObject(hitTestResult.getData());
+                    graph.appendSelectObject(hitTestResult.getData(), true);
                     drawMoveAction.setData(graph, canvas);
                     return drawMoveAction;
                 case HT_NONE:
@@ -80,7 +78,7 @@ public class DefaultMouseAction implements IMouseAction{
                     switch (hitTestResult.getHitTest()) {
                         case HT_OBJECT:
                             // ctrl + click (has selected item) -> remove it from the selected list
-                            graph.removeSelectObject(hitTestResult.getData());
+                            graph.removeSelectObject(hitTestResult.getData(), true);
                             return null;
                         default:
                             drawMoveAction.setData(graph, canvas);
@@ -112,12 +110,12 @@ public class DefaultMouseAction implements IMouseAction{
                         if(event.ctrlKey)
                         {
                             // Ctrl+Click  append selected item to the selected list
-                            graph.appendSelectObject(hitTestResult.getData());
+                            graph.appendSelectObject(hitTestResult.getData(), true);
                             return null;
                         }
                         else {
                             graph.clearSelected();
-                            graph.appendSelectObject(hitTestResult.getData());
+                            graph.appendSelectObject(hitTestResult.getData(), true);
                             drawMoveAction.setData(graph, canvas);
                             return drawMoveAction;
                         }

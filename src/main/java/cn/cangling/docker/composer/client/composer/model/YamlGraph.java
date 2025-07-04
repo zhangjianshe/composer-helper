@@ -1,15 +1,19 @@
 package cn.cangling.docker.composer.client.composer.model;
 
+import cn.cangling.docker.composer.client.composer.event.GraphEvent;
+import cn.cangling.docker.composer.client.composer.event.GraphEventHandler;
+import cn.cangling.docker.composer.client.composer.event.HasGraphEventHandler;
 import cn.cangling.docker.composer.client.js.Jss;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.SimpleEventBus;
 import elemental2.core.Global;
 import elemental2.dom.CanvasRenderingContext2D;
-import elemental2.dom.DomGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class YamlGraph {
+public class YamlGraph implements HasGraphEventHandler {
     private final List<ServiceObject> serviceObjects = new ArrayList<>();
     private final List<NetworkObject> networksObjects = new ArrayList<>();
     private final List<VolumeObject> volumeObjects = new ArrayList<>();
@@ -219,17 +223,24 @@ public class YamlGraph {
             object.setSelected(false);
         }
         selectedObjects.clear();
+        fireEvent(GraphEvent.selectChangeEvent(this));
     }
 
-    public void appendSelectObject(RendingObject object) {
+    public void appendSelectObject(RendingObject object, boolean fireEvent) {
         if(object==null)return;
         object.setSelected(true);
         selectedObjects.add(object);
+        if(fireEvent) {
+            fireEvent(GraphEvent.selectChangeEvent(this));
+        }
     }
-    public void removeSelectObject(RendingObject object) {
+    public void removeSelectObject(RendingObject object, boolean fireEvent) {
         if(object==null)return;
         selectedObjects.remove(object);
         object.setSelected(false);
+        if(fireEvent) {
+            fireEvent(GraphEvent.selectChangeEvent(this));
+        }
     }
 
     public void appendSelectObjects(boolean clear, List<RendingObject> highlight) {
@@ -237,8 +248,9 @@ public class YamlGraph {
             clearSelected();
         }
         for (RendingObject object : highlight) {
-            appendSelectObject(object);
+            appendSelectObject(object, false);
         }
+        fireEvent(GraphEvent.selectChangeEvent(this));
     }
 
     public HitTestResult hitTest(Point ptCanvasPoint) {
@@ -454,4 +466,14 @@ public class YamlGraph {
         actionObjects.clear();
     }
 
+    SimpleEventBus eventBus=new SimpleEventBus();
+    @Override
+    public HandlerRegistration addGraphEventHandler(GraphEventHandler handler) {
+        return eventBus.addHandler(GraphEvent.TYPE, handler);
+    }
+
+    @Override
+    public void fireEvent(GwtEvent<?> event) {
+        eventBus.fireEvent(event);
+    }
 }

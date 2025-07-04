@@ -1,0 +1,36 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .btn {
+            width: 32px;
+            height: 32px;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+        }
+
+        .btn > svg {
+            width: 28px;
+            height: 28px;
+        }
+        .btn > svg > *{
+            fill: #4a79c3;
+        }
+        .btn:HOVER {
+            background-color: #d0d0d0;
+        }
+
+        .btn[disabled="true"] > svg > *{
+            fill: #808080;
+        }
+        .btn[disabled="true"]:HOVER {
+            background-color: transparent;
+        }
+
+    </ui:style>
+    <g:HTML ui:field="root" styleName="{style.btn}">
+
+    </g:HTML>
+</ui:UiBinder>

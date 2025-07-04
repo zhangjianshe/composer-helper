@@ -1,9 +1,13 @@
 package cn.cangling.docker.composer.client.composer.editor;
 
+import cn.cangling.docker.composer.client.composer.event.GraphEventHandler;
+import cn.cangling.docker.composer.client.composer.event.HasGraphEventHandler;
 import cn.cangling.docker.composer.client.composer.model.*;
+import cn.cangling.docker.composer.client.composer.model.Rect;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplate;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplates;
 import cn.cangling.docker.composer.client.resource.ComposerResource;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RequiresResize;
@@ -11,11 +15,13 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.*;
 import jsinterop.base.Js;
 
+import java.util.List;
+
 /**
  * composer editor
  * output a yaml
  */
-public class ComposerEditor extends Widget implements RequiresResize {
+public class ComposerEditor extends Widget implements RequiresResize, HasGraphEventHandler {
     HTMLCanvasElement canvas;
     ImageResource background;
     int FPS = 60;
@@ -23,16 +29,18 @@ public class ComposerEditor extends Widget implements RequiresResize {
     boolean continueDrawing = true;
     CanvasPattern backgroundPattern;
     double lastTime = 0;
-    ServiceYaml serviceYaml = new ServiceYaml();
-    YamlGraph graph = null;
+    YamlGraph graph;
     DefaultMouseAction defaultMouseAction;
-    IMouseAction currentMouseAction =null;
+    IMouseAction currentMouseAction = null;
+
+
     public ComposerEditor() {
         canvas = Js.uncheckedCast(DomGlobal.document.createElement("canvas"));
         setElement(Js.uncheckedCast(canvas));
         canvas.oncontextmenu = p0 -> false;
         background = ComposerResource.INSTANCE.grid();
         defaultMouseAction = new DefaultMouseAction();
+        graph = new YamlGraph();
         installEventHandlers();
     }
 
@@ -68,21 +76,20 @@ public class ComposerEditor extends Widget implements RequiresResize {
 
         canvas.onmousedown = p0 -> {
             MouseEvent mouseEvent = Js.uncheckedCast(p0);
-            if(currentMouseAction ==null) {
-                defaultMouseAction.setData(graph,canvas);
-                currentMouseAction =defaultMouseAction;
+            if (currentMouseAction == null) {
+                defaultMouseAction.setData(graph, canvas);
+                currentMouseAction = defaultMouseAction;
             }
-            IMouseAction nextAction= currentMouseAction.onDown(mouseEvent);
-            if(nextAction!=null)
-            {
-                currentMouseAction=nextAction;
+            IMouseAction nextAction = currentMouseAction.onDown(mouseEvent);
+            if (nextAction != null) {
+                currentMouseAction = nextAction;
                 currentMouseAction.onDown(mouseEvent);
             }
             return true;
         };
 
         canvas.onmousemove = p0 -> {
-            if (currentMouseAction !=null) {
+            if (currentMouseAction != null) {
                 MouseEvent mouseEvent = Js.uncheckedCast(p0);
                 currentMouseAction.onMove(mouseEvent);
             }
@@ -90,11 +97,11 @@ public class ComposerEditor extends Widget implements RequiresResize {
         };
 
         canvas.onmouseup = p0 -> {
-            if (currentMouseAction !=null) {
+            if (currentMouseAction != null) {
                 MouseEvent mouseEvent = Js.uncheckedCast(p0);
                 currentMouseAction.onUp(mouseEvent);
             }
-            currentMouseAction =null;
+            currentMouseAction = null;
             return true;
         };
     }
@@ -132,8 +139,6 @@ public class ComposerEditor extends Widget implements RequiresResize {
     }
 
 
-
-
     @Override
     public void onResize() {
         int width = getParent().getOffsetWidth();
@@ -151,9 +156,6 @@ public class ComposerEditor extends Widget implements RequiresResize {
     @Override
     protected void onLoad() {
         super.onLoad();
-        if (graph == null) {
-           graph=new YamlGraph();
-        }
         startDrawing();
     }
 
@@ -213,5 +215,72 @@ public class ComposerEditor extends Widget implements RequiresResize {
 
     public YamlGraph getYamlGraph() {
         return graph;
+    }
+
+    @Override
+    public HandlerRegistration addGraphEventHandler(GraphEventHandler handler) {
+        return graph.addGraphEventHandler(handler);
+    }
+
+
+    /**
+     * 执行选中的目标进行布局
+     *
+     * @param value
+     */
+    public void doAlignCommand(ToolbarCommands value) {
+        List<RendingObject> list = getYamlGraph().getSelectObjectList();
+        if (list.isEmpty()) {
+            return;
+        }
+        Rect drawingRect = list.get(0).getDrawingRect();
+        switch (value) {
+            case CMD_ALIGN_TOP: {
+                double top = drawingRect.y;
+                for (int i = 1; i < list.size(); i++) {
+                    list.get(i).getRect().y = top;
+                }
+            }
+            break;
+            case CMD_ALIGN_BOTTOM: {
+                double bottom = drawingRect.y + drawingRect.height;
+                for (int i = 1; i < list.size(); i++) {
+                    Rect targetRect = list.get(i).getRect();
+                    targetRect.y = bottom - targetRect.height;
+                }
+            }
+            break;
+            case CMD_ALIGN_MIDDLE: {
+                double centerY = drawingRect.center().y;
+                for (int i = 1; i < list.size(); i++) {
+                    Rect targetRect = list.get(i).getRect();
+                    targetRect.y = centerY - targetRect.height / 2;
+                }
+            }
+            break;
+            case CMD_ALIGN_LEFT: {
+                double left = drawingRect.x;
+                for (int i = 1; i < list.size(); i++) {
+                    list.get(i).getRect().x = left;
+                }
+            }
+            break;
+            case CMD_ALIGN_RIGHT: {
+                double right = drawingRect.x + drawingRect.width;
+                for (int i = 1; i < list.size(); i++) {
+                    Rect targetRect = list.get(i).getRect();
+                    targetRect.x = right - targetRect.width;
+                }
+            }
+            break;
+            case CMD_ALIGN_CENTER: {
+                double centerX = drawingRect.center().x;
+                for (int i = 1; i < list.size(); i++) {
+                    Rect targetRect = list.get(i).getRect();
+                    targetRect.x = centerX - targetRect.width / 2;
+                }
+            }
+            break;
+        }
     }
 }
