@@ -6,7 +6,6 @@ on:
     branches:
       - main # Or your default branch like 'master'
   workflow_dispatch: # Allows manual triggering of the workflow
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -60,3 +59,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 # Uses the official GitHub Pages deployment action
+  deploy:
+    environment:
+      name: github-pages
