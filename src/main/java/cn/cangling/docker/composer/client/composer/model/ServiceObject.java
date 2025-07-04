@@ -97,11 +97,11 @@ public class ServiceObject extends RendingObject<Service> {
         }
 
         if (volumeBox == null) {
-            volumeBox = new RoundBoxObject(0);
+            volumeBox = new RoundBoxObject(5);
         }
         volumeBox.setWidth(1);
         volumeBox.setDash(null);
-        volumeBox.setColor("#a0a0a0");
+        volumeBox.setColor("#d0d0d0");
         volumeBox.rect(rect.x, rect.y + rect.height + MARGIN,
                 PADDING + PADDING + ICON_WIDTH * (volumes.size()),
                 PADDING + PADDING + ICON_WIDTH);
@@ -127,7 +127,7 @@ public class ServiceObject extends RendingObject<Service> {
         }
 
         if (networkBox == null) {
-            networkBox = new RoundBoxObject(0);
+            networkBox = new RoundBoxObject(5);
         }
 
         networkBox.rect(volumeBox.getRect().x + volumeBox.getRect().width + PADDING,
@@ -135,7 +135,7 @@ public class ServiceObject extends RendingObject<Service> {
                 PADDING + PADDING + ICON_WIDTH * (networks.size()), PADDING + PADDING + ICON_WIDTH);
         networkBox.setWidth(1);
         networkBox.setDash(null);
-        networkBox.setColor("#a0a0a0");
+        networkBox.setColor("#d0d0d0");
         networkBox.setParent(this);
 
         boxWidth = Math.max(boxWidth,

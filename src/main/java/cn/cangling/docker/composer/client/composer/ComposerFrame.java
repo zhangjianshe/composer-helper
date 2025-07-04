@@ -1,17 +1,20 @@
 package cn.cangling.docker.composer.client.composer;
 
+import cn.cangling.docker.composer.client.composer.editor.AlignToolbar;
 import cn.cangling.docker.composer.client.composer.editor.ComposerEditor;
+import cn.cangling.docker.composer.client.composer.editor.FileToolbar;
+import cn.cangling.docker.composer.client.composer.editor.ToolbarCommands;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplates;
 import cn.cangling.docker.composer.client.composer.template.TemplateItem;
-import cn.cangling.docker.composer.client.resource.ComposerResource;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.RequiresResize;
 
 public class ComposerFrame extends Composite implements RequiresResize {
     private static final ComposerFrameUiBinder ourUiBinder = GWT.create(ComposerFrameUiBinder.class);
@@ -20,15 +23,34 @@ public class ComposerFrame extends Composite implements RequiresResize {
     @UiField
     HTMLPanel list;
     @UiField
-    Image btnOpen;
-    @UiField
-    Image btnSave;
-    @UiField
     ComposerEditor editor;
+    @UiField
+    AlignToolbar alignToolbar;
+    @UiField
+    FileToolbar fileToolbar;
+
     public ComposerFrame() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        btnOpen.setResource(ComposerResource.INSTANCE.open());
-        btnSave.setResource(ComposerResource.INSTANCE.save());
+        fileToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
+        alignToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
+    }
+
+    private void processHandler(ToolbarCommands value) {
+        switch (value) {
+            case CMD_OPEN: {
+                Storage storage = Storage.getLocalStorageIfSupported();
+                String tempGraph = storage.getItem("temp_graph");
+                editor.getYamlGraph().loadFromJson(tempGraph);
+                break;
+            }
+            case CMD_SAVE: {
+                String data = editor.getYamlGraph().exportToJson();
+                Storage storage = Storage.getLocalStorageIfSupported();
+                storage.setItem("temp_graph", data);
+                Window.setTitle("graph saved");
+                break;
+            }
+        }
     }
 
     @Override
@@ -50,21 +72,6 @@ public class ComposerFrame extends Composite implements RequiresResize {
             templateItem1.setData(templateItem);
             list.add(templateItem1);
         });
-    }
-
-    @UiHandler("btnSave")
-    public void btnSaveClick(ClickEvent event) {
-        String data = editor.getYamlGraph().exportToJson();
-        Storage storage = Storage.getLocalStorageIfSupported();
-        storage.setItem("temp_graph", data);
-        Window.setTitle("graph saved");
-    }
-
-    @UiHandler("btnOpen")
-    public void btnOpenClick(ClickEvent event) {
-        Storage storage = Storage.getLocalStorageIfSupported();
-        String tempGraph = storage.getItem("temp_graph");
-        editor.getYamlGraph().loadFromJson(tempGraph);
     }
 
     interface ComposerFrameUiBinder extends UiBinder<DockLayoutPanel, ComposerFrame> {

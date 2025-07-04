@@ -74,8 +74,23 @@ public class DefaultMouseAction implements IMouseAction{
         else {
             //之前有选中的操作 只有清空或者移动的操作
             if (graph.pointInSelection(ptCanvas.x, ptCanvas.y)) {
-                drawMoveAction.setData(graph, canvas);
-                return drawMoveAction;
+                if(event.ctrlKey)
+                {
+                    HitTestResult hitTestResult = graph.hitTest(ptCanvas);
+                    switch (hitTestResult.getHitTest()) {
+                        case HT_OBJECT:
+                            // ctrl + click (has selected item) -> remove it from the selected list
+                            graph.removeSelectObject(hitTestResult.getData());
+                            return null;
+                        default:
+                            drawMoveAction.setData(graph, canvas);
+                            return drawMoveAction;
+                    }
+                }
+                else {
+                    drawMoveAction.setData(graph, canvas);
+                    return drawMoveAction;
+                }
             }
             else {
                 //清空选择 进行下一次拉框选择
@@ -94,11 +109,18 @@ public class DefaultMouseAction implements IMouseAction{
                         drawDependencyLinkAction.setData(graph, canvas);
                         return drawDependencyLinkAction;
                     case HT_OBJECT:
-                        graph.clearSelected();
-                        graph.appendSelectObject(hitTestResult.getData());
-                        drawMoveAction.setData(graph, canvas);
-                        return drawMoveAction;
-
+                        if(event.ctrlKey)
+                        {
+                            // Ctrl+Click  append selected item to the selected list
+                            graph.appendSelectObject(hitTestResult.getData());
+                            return null;
+                        }
+                        else {
+                            graph.clearSelected();
+                            graph.appendSelectObject(hitTestResult.getData());
+                            drawMoveAction.setData(graph, canvas);
+                            return drawMoveAction;
+                        }
                     default:
                         graph.clearSelected();
                         drawDragBoxAction.setData(graph, canvas);

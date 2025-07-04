@@ -9,9 +9,6 @@ public class RoundBoxObject extends RendingObject {
     private double[] dash = null;
     private String color = "black";
 
-    public RoundBoxObject() {
-        this(10);
-    }
 
     public RoundBoxObject(int radius) {
         this.radius = radius;

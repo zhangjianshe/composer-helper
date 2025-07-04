@@ -20,21 +20,7 @@
             background-color: #f0f0f0;
         }
 
-        .toobar {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 10px;
-        }
-        .btn{
-            width: 36px;
-            height: 36px;
-            overflow: hidden;
-            padding: 5px;
-        }
-        .btn:HOVER{
-            background-color: skyblue;
-        }
+
     </ui:style>
     <g:DockLayoutPanel ui:field="root">
         <g:west size="300">
@@ -45,10 +31,10 @@
             </g:ScrollPanel>
         </g:west>
         <g:north size="50">
-            <g:HTMLPanel addStyleNames="{style.toobar}">
-                <g:Image ui:field="btnOpen" addStyleNames="{style.btn}"/>
-                <g:Image ui:field="btnSave" addStyleNames="{style.btn}"/>
-            </g:HTMLPanel>
+            <g:HorizontalPanel height="100%" verticalAlignment="middle" spacing="4">
+                <t:FileToolbar ui:field="fileToolbar"/>
+                <t:AlignToolbar ui:field="alignToolbar"/>
+            </g:HorizontalPanel>
         </g:north>
         <g:center>
                 <t:ComposerEditor ui:field="editor" addStyleNames="{style.box}"/>

@@ -222,8 +222,14 @@ public class YamlGraph {
     }
 
     public void appendSelectObject(RendingObject object) {
+        if(object==null)return;
         object.setSelected(true);
         selectedObjects.add(object);
+    }
+    public void removeSelectObject(RendingObject object) {
+        if(object==null)return;
+        selectedObjects.remove(object);
+        object.setSelected(false);
     }
 
     public void appendSelectObjects(boolean clear, List<RendingObject> highlight) {
@@ -308,6 +314,7 @@ public class YamlGraph {
     public List<RendingObject> getSelectObjectList() {
         return selectedObjects;
     }
+
 
     /**
      * 高亮框选的内容
