@@ -56,6 +56,7 @@ public interface ComposerResource extends ClientBundle {
 
     @Source("save_file.svg")
     TextResource save_svg();
+
     @Source("open_file.svg")
     TextResource open_svg();
 
@@ -92,5 +93,10 @@ public interface ComposerResource extends ClientBundle {
     @Source("same_height.svg")
     TextResource same_height();
 
+    @Source("docker_helper.svg")
+    TextResource dockerHelper();
+
+    @Source("default_graph.json")
+    TextResource defaultGraph();
 
 }

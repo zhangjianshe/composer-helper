@@ -7,6 +7,7 @@ import cn.cangling.docker.composer.client.composer.model.Rect;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplate;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplates;
 import cn.cangling.docker.composer.client.resource.ComposerResource;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
@@ -42,6 +43,9 @@ public class ComposerEditor extends Widget implements RequiresResize, HasGraphEv
         defaultMouseAction = new DefaultMouseAction();
         graph = new YamlGraph();
         installEventHandlers();
+
+        // load default graph
+        graph.loadFromJson(ComposerResource.INSTANCE.defaultGraph().getText());
     }
 
     /**
@@ -141,8 +145,9 @@ public class ComposerEditor extends Widget implements RequiresResize, HasGraphEv
 
     @Override
     public void onResize() {
-        int width = getParent().getOffsetWidth();
-        int height = getParent().getOffsetHeight();
+        Element parentElement = getElement().getParentElement();
+        int width = parentElement.getOffsetWidth()-2;
+        int height = parentElement.getOffsetHeight()-2;
         double ratio = DomGlobal.window.devicePixelRatio;
         canvas.width = (int) (width * ratio);
         canvas.height = (int) (height * ratio);

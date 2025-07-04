@@ -7,5 +7,10 @@
     <inherits name="elemental2.dom.Dom"/>
     <source path="client"/>
     <source path="shared"/>
+    <generate-with
+            class="cn.cangling.docker.composer.server.gwt.CompileVersionGenerator">
+        <when-type-assignable
+                class="cn.cangling.docker.composer.client.version.ICompileInfoProvider"/>
+    </generate-with>
     <entry-point class='cn.cangling.docker.composer.client.Composerui'/>
 </module>

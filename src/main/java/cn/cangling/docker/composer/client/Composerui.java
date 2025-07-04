@@ -7,6 +7,6 @@ import com.google.gwt.user.client.ui.*;
 public class Composerui implements EntryPoint {
     public void onModuleLoad() {
         RootLayoutPanel root = RootLayoutPanel.get();
-        root.add(new ComposerFrame());
+        root.add(new MainFrame());
     }
 }

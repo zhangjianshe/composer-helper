@@ -4,7 +4,9 @@
 >
     <ui:style>
         .box {
-            background-color: green;
+            border: solid 1px skyblue;
+            box-sizing: border-box;
+            border-radius: 10px;
         }
 
         .list {
@@ -18,26 +20,40 @@
 
         .left {
             background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 10px;
         }
 
+        .tools {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    </ui:style>
-    <g:DockLayoutPanel ui:field="root">
-        <g:west size="300">
+        .bar {
+            background-color:white;
+            border-radius: 5px;
+            border: 1px solid gray;
+        }</ui:style>
+    <g:LayoutPanel ui:field="root">
+        <g:layer left="10" top="10" width="300" bottom="10">
             <g:ScrollPanel addStyleNames="{style.left}">
                 <g:HTMLPanel ui:field="list" addStyleNames="{style.list}">
 
                 </g:HTMLPanel>
             </g:ScrollPanel>
-        </g:west>
-        <g:north size="50">
-            <g:HorizontalPanel height="100%" verticalAlignment="middle" spacing="4">
-                <t:FileToolbar ui:field="fileToolbar"/>
-                <t:AlignToolbar ui:field="alignToolbar"/>
-            </g:HorizontalPanel>
-        </g:north>
-        <g:center>
-                <t:ComposerEditor ui:field="editor" addStyleNames="{style.box}"/>
-        </g:center>
-    </g:DockLayoutPanel>
+        </g:layer>
+
+        <g:layer left="320" right="10" top="10" bottom="10">
+            <t:ComposerEditor ui:field="editor" addStyleNames="{style.box}"/>
+        </g:layer>
+        <g:layer left="320" top="20" right="10" height="50">
+            <g:HTMLPanel styleName="{style.tools}">
+                <g:HorizontalPanel height="100%"  verticalAlignment="middle" spacing="4" addStyleNames="{style.bar}">
+                    <t:FileToolbar ui:field="fileToolbar"/>
+                    <t:AlignToolbar ui:field="alignToolbar"/>
+                </g:HorizontalPanel>
+            </g:HTMLPanel>
+        </g:layer>
+    </g:LayoutPanel>
 </ui:UiBinder>

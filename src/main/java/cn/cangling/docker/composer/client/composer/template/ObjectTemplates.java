@@ -24,8 +24,9 @@ public class ObjectTemplates {
         list.add(ObjectTemplate.createService(Images.getPostgres(),"PostGIS"));
         list.add(ObjectTemplate.createService(Images.getKafka(),"Kafka"));
         list.add(ObjectTemplate.createService(Images.getGeoserver(),"GeoServer"));
-        list.add(ObjectTemplate.createNetwork(Images.getNet(),"缺省网络"));
-        list.add(ObjectTemplate.createVolume(Images.getHard(),"缺省数据卷"));
+        list.add(ObjectTemplate.createNetwork(Images.getNet(),"Network"));
+        list.add(ObjectTemplate.createVolume(Images.getHard(),"Volume"));
+        list.add(ObjectTemplate.createVolume(Images.getNginx(),"Nginx"));
     }
     public ObjectTemplate findByName(String name){
         for(ObjectTemplate objectTemplate : list){
