@@ -9,20 +9,32 @@
         .lb {
             font-weight: bold;
             font-size: 1.3rem;
+            color: white;
         }
 
         .top {
-            background: linear-gradient(to bottom, skyblue, rgba(0, 255, 0, 0));
+            background-color:rgba(43,45,86,0.9);
         }
 
         .version {
-            color: #808080;
+            color: #d0d0d0;
             font-size: 0.9rem;
             margin-top: 4px;
+        }
+
+        .link {
+            color: #f0f0f0;
+        }
+
+        .msg
+        {
+            color: #f0f0f0;
+            font-size: 1.1rem;
+            font-style: italic;
         }</ui:style>
     <g:DockLayoutPanel ui:field="root">
-        <g:north size="60">
-            <g:HorizontalPanel width="100%" verticalAlignment="middle" spacing="8" styleName="{style.top}">
+        <g:north size="70">
+            <g:HorizontalPanel width="100%" verticalAlignment="middle" spacing="10" styleName="{style.top}">
                 <g:cell width="70px">
                     <g:HTML ui:field="logo" styleName="{style.logo}"/>
                 </g:cell>
@@ -30,6 +42,10 @@
                     <g:Label ui:field="lbName" styleName="{style.lb}">Docker Composer Writer</g:Label>
                     <g:Label ui:field="lbVersion" addStyleNames="{style.version}"/>
                 </g:VerticalPanel>
+                <g:Label ui:field="lbMessage" styleName="{style.msg}"/>
+                <g:cell horizontalAlignment="right">
+                   <g:Anchor href="mailto:zhangjianshe@gmail.com" styleName="{style.link}">zhangjianshe@gmail.com</g:Anchor>
+                </g:cell>
             </g:HorizontalPanel>
         </g:north>
         <g:center>

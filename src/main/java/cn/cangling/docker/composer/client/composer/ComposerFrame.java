@@ -5,10 +5,13 @@ import cn.cangling.docker.composer.client.composer.editor.ComposerEditor;
 import cn.cangling.docker.composer.client.composer.editor.FileToolbar;
 import cn.cangling.docker.composer.client.composer.editor.ToolbarCommands;
 import cn.cangling.docker.composer.client.composer.event.GraphEvent;
+import cn.cangling.docker.composer.client.composer.event.GraphEventHandler;
+import cn.cangling.docker.composer.client.composer.event.HasGraphEventHandler;
 import cn.cangling.docker.composer.client.composer.model.YamlGraph;
 import cn.cangling.docker.composer.client.composer.template.ObjectTemplates;
 import cn.cangling.docker.composer.client.composer.template.TemplateItem;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,7 +19,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
-public class ComposerFrame extends Composite implements RequiresResize {
+public class ComposerFrame extends Composite implements RequiresResize, HasGraphEventHandler {
     private static final ComposerFrameUiBinder ourUiBinder = GWT.create(ComposerFrameUiBinder.class);
     @UiField
     LayoutPanel root;
@@ -33,6 +36,7 @@ public class ComposerFrame extends Composite implements RequiresResize {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
         alignToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
+        alignToolbar.enableAll(false);
     }
 
     private void processHandler(ToolbarCommands value) {
@@ -41,13 +45,14 @@ public class ComposerFrame extends Composite implements RequiresResize {
                 Storage storage = Storage.getLocalStorageIfSupported();
                 String tempGraph = storage.getItem("temp_graph");
                 editor.getYamlGraph().loadFromJson(tempGraph);
+                fireEvent(GraphEvent.messageEvent("load from storage"));
                 break;
             }
             case CMD_SAVE: {
                 String data = editor.getYamlGraph().exportToJson();
                 Storage storage = Storage.getLocalStorageIfSupported();
                 storage.setItem("temp_graph", data);
-                Window.setTitle("graph saved");
+                fireEvent(GraphEvent.messageEvent("graph saved"));
                 break;
             }
             case CMD_ALIGN_TOP:
@@ -88,9 +93,18 @@ public class ComposerFrame extends Composite implements RequiresResize {
             case ET_SELECT_CHANGED:
                 YamlGraph graph = event.getData();
                 alignToolbar.enableAll(!graph.getSelectObjectList().isEmpty());
+                break;
+            case ET_MESSAGE:
+                fireEvent(event);
+                break;
             case ET_NONE:
             default:
         }
+    }
+
+    @Override
+    public HandlerRegistration addGraphEventHandler(GraphEventHandler handler) {
+        return addHandler(handler,GraphEvent.TYPE);
     }
 
     interface ComposerFrameUiBinder extends UiBinder<LayoutPanel, ComposerFrame> {

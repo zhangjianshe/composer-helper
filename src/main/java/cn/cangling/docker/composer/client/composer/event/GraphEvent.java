@@ -7,6 +7,11 @@ public class GraphEvent extends GwtEvent<GraphEventHandler> {
     Object data;
     EventType eventType;
     public static Type<GraphEventHandler> TYPE = new Type<GraphEventHandler>();
+
+    public static GwtEvent<?> messageEvent(String message) {
+        return new GraphEvent(EventType.ET_MESSAGE, message);
+    }
+
     public void setData(Object data) {
         this.data = data;
     }
