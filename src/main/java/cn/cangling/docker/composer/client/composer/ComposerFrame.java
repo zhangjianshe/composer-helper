@@ -1,9 +1,6 @@
 package cn.cangling.docker.composer.client.composer;
 
-import cn.cangling.docker.composer.client.composer.editor.AlignToolbar;
-import cn.cangling.docker.composer.client.composer.editor.ComposerEditor;
-import cn.cangling.docker.composer.client.composer.editor.FileToolbar;
-import cn.cangling.docker.composer.client.composer.editor.ToolbarCommands;
+import cn.cangling.docker.composer.client.composer.editor.*;
 import cn.cangling.docker.composer.client.composer.event.GraphEvent;
 import cn.cangling.docker.composer.client.composer.event.GraphEventHandler;
 import cn.cangling.docker.composer.client.composer.event.HasGraphEventHandler;
@@ -30,12 +27,17 @@ public class ComposerFrame extends Composite implements RequiresResize, HasGraph
     AlignToolbar alignToolbar;
     @UiField
     FileToolbar fileToolbar;
+    @UiField
+    OperationToolbar operationToolbar;
 
     public ComposerFrame() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
         alignToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
         alignToolbar.enableAll(false);
+
+        operationToolbar.addValueChangeHandler(event -> processHandler(event.getValue()));
+        operationToolbar.enableAll(false);
     }
 
     private void processHandler(ToolbarCommands value) {
@@ -52,6 +54,10 @@ public class ComposerFrame extends Composite implements RequiresResize, HasGraph
                 Storage storage = Storage.getLocalStorageIfSupported();
                 storage.setItem("temp_graph", data);
                 fireEvent(GraphEvent.messageEvent("graph saved"));
+                break;
+            }
+            case CMD_DELETE:{
+                editor.deleteSelectObjects();
                 break;
             }
             case CMD_ALIGN_TOP:
@@ -92,6 +98,7 @@ public class ComposerFrame extends Composite implements RequiresResize, HasGraph
             case ET_SELECT_CHANGED:
                 YamlGraph graph = event.getData();
                 alignToolbar.enableAll(!graph.getSelectObjectList().isEmpty());
+                operationToolbar.enableAll(!graph.getSelectObjectList().isEmpty());
                 break;
             case ET_MESSAGE:
                 fireEvent(event);

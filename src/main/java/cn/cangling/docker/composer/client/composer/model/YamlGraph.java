@@ -11,6 +11,7 @@ import elemental2.core.Global;
 import elemental2.dom.CanvasRenderingContext2D;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class YamlGraph implements HasGraphEventHandler {
@@ -23,6 +24,7 @@ public class YamlGraph implements HasGraphEventHandler {
     boolean enableDrag = false;
     List<RendingObject> selectedObjects = new ArrayList<>();
     List<RendingObject> highlights = new ArrayList<>();
+    SimpleEventBus eventBus = new SimpleEventBus();
 
     public DragBoxObject enableDragBox(boolean enable) {
         enableDrag = enable;
@@ -39,7 +41,7 @@ public class YamlGraph implements HasGraphEventHandler {
     public NetworkObject addNetwork(Network network) {
         NetworkObject networkObject = new NetworkObject(network);
         networkObject.setGraph(this);
-        networkObject.getRect().set(network.designData.x,network.designData.y);
+        networkObject.getRect().set(network.designData.x, network.designData.y);
         networksObjects.add(networkObject);
         return networkObject;
     }
@@ -112,13 +114,11 @@ public class YamlGraph implements HasGraphEventHandler {
 
     public VolumeObject addVolume(Volume volume) {
         VolumeObject volumeObject = new VolumeObject(volume);
-        volumeObject.getRect().set(volume.designData.x,volume.designData.y);
+        volumeObject.getRect().set(volume.designData.x, volume.designData.y);
         volumeObject.setGraph(this);
         volumeObjects.add(volumeObject);
         return volumeObject;
     }
-
-
 
     public LinkObject addLink(Link link) {
         LinkObject linkObject = new LinkObject(link);
@@ -153,8 +153,8 @@ public class YamlGraph implements HasGraphEventHandler {
         for (ServiceObject serviceObject : serviceObjects) {
             Service service = serviceObject.getRefObject();
             //update position information
-            DesignData data=service.designData;
-            serviceObject.getRect().set(data.x,data.y);
+            DesignData data = service.designData;
+            serviceObject.getRect().set(data.x, data.y);
 
             for (String dependency : service.dependsOn.asList()) {
                 ServiceObject serviceObject1 = findServiceObject(dependency);
@@ -185,6 +185,7 @@ public class YamlGraph implements HasGraphEventHandler {
         }
         return null;
     }
+
     public ServiceObject findServiceObject(String serviceName) {
         for (ServiceObject serviceObject : serviceObjects) {
             if (serviceObject.getRefObject().name.equals(serviceName)) {
@@ -193,7 +194,6 @@ public class YamlGraph implements HasGraphEventHandler {
         }
         return null;
     }
-
 
     public void draw(CanvasRenderingContext2D context2D, double t) {
         for (LinkObject linkObject : linkObjects) {
@@ -227,18 +227,19 @@ public class YamlGraph implements HasGraphEventHandler {
     }
 
     public void appendSelectObject(RendingObject object, boolean fireEvent) {
-        if(object==null)return;
+        if (object == null) return;
         object.setSelected(true);
         selectedObjects.add(object);
-        if(fireEvent) {
+        if (fireEvent) {
             fireEvent(GraphEvent.selectChangeEvent(this));
         }
     }
+
     public void removeSelectObject(RendingObject object, boolean fireEvent) {
-        if(object==null)return;
+        if (object == null) return;
         selectedObjects.remove(object);
         object.setSelected(false);
-        if(fireEvent) {
+        if (fireEvent) {
             fireEvent(GraphEvent.selectChangeEvent(this));
         }
     }
@@ -310,7 +311,7 @@ public class YamlGraph implements HasGraphEventHandler {
     public void offsetSelected(double dx, double dy) {
         if (selectedObjects.size() > 0) {
             for (RendingObject object : selectedObjects) {
-                object.getRect().offset(dx, dy);
+                object.offset(dx, dy);
             }
         }
     }
@@ -326,7 +327,6 @@ public class YamlGraph implements HasGraphEventHandler {
     public List<RendingObject> getSelectObjectList() {
         return selectedObjects;
     }
-
 
     /**
      * 高亮框选的内容
@@ -385,34 +385,29 @@ public class YamlGraph implements HasGraphEventHandler {
      * 将网络平铺
      * 将磁盘平铺
      */
-    public void autoLayout()
-    {
+    public void autoLayout() {
 
     }
 
-
     /**
      * 导出到XML文件中
+     *
      * @return
      */
-    public String exportToJson()
-    {
+    public String exportToJson() {
         ServiceYaml yaml = new ServiceYaml();
-        for(ServiceObject serviceObject : serviceObjects)
-        {
-            Service service=serviceObject.getRefObject();
+        for (ServiceObject serviceObject : serviceObjects) {
+            Service service = serviceObject.getRefObject();
             service.designData.setData(serviceObject.getDrawingRect().x, serviceObject.getDrawingRect().y);
             yaml.services.push(service);
         }
-        for(NetworkObject networkObject : networksObjects)
-        {
-            Network network=networkObject.getRefObject();
+        for (NetworkObject networkObject : networksObjects) {
+            Network network = networkObject.getRefObject();
             network.designData.setData(networkObject.getDrawingRect().x, networkObject.getDrawingRect().y);
             yaml.networks.push(network);
         }
-        for (VolumeObject volumeObject : volumeObjects)
-        {
-            Volume volume=volumeObject.getRefObject();
+        for (VolumeObject volumeObject : volumeObjects) {
+            Volume volume = volumeObject.getRefObject();
             volume.designData.setData(volumeObject.getDrawingRect().x, volumeObject.getDrawingRect().y);
             yaml.volumes.push(volume);
         }
@@ -421,31 +416,30 @@ public class YamlGraph implements HasGraphEventHandler {
 
     /**
      * 该方法会将原声的 javascript object转化为 Java Type
+     *
      * @param tempGraph
      */
     public void loadFromJson(String tempGraph) {
-        if(tempGraph==null || tempGraph.isEmpty())
-        {
+        if (tempGraph == null || tempGraph.isEmpty()) {
             clear();
-        }
-        else {
+        } else {
             Object obj = Global.JSON.parse(tempGraph);
-            ServiceYaml yaml= Jss.castTo(obj, ServiceYaml.class);
-            for (int i = 0;i<yaml.services.length;i++) {
-                Service service=Jss.castTo(yaml.services.getAt(i),Service.class);
-                Jss.castTo(service.designData,DesignData.class);
-                Jss.castTo(service.healthcheck,HealthChecker.class);
+            ServiceYaml yaml = Jss.castTo(obj, ServiceYaml.class);
+            for (int i = 0; i < yaml.services.length; i++) {
+                Service service = Jss.castTo(yaml.services.getAt(i), Service.class);
+                Jss.castTo(service.designData, DesignData.class);
+                Jss.castTo(service.healthcheck, HealthChecker.class);
 
                 addService(service);
             }
-            for (int i = 0;i<yaml.networks.length;i++) {
-                Network network=Jss.castTo(yaml.networks.getAt(i),Network.class);
-                Jss.castTo(network.designData,DesignData.class);
+            for (int i = 0; i < yaml.networks.length; i++) {
+                Network network = Jss.castTo(yaml.networks.getAt(i), Network.class);
+                Jss.castTo(network.designData, DesignData.class);
                 addNetwork(network);
             }
-            for (int i = 0;i<yaml.volumes.length;i++) {
-                Volume volume=Jss.castTo(yaml.volumes.getAt(i),Volume.class);
-                Jss.castTo(volume.designData,DesignData.class);
+            for (int i = 0; i < yaml.volumes.length; i++) {
+                Volume volume = Jss.castTo(yaml.volumes.getAt(i), Volume.class);
+                Jss.castTo(volume.designData, DesignData.class);
                 addVolume(volume);
             }
             build();
@@ -457,8 +451,7 @@ public class YamlGraph implements HasGraphEventHandler {
     /**
      * 清空图
      */
-    public void clear()
-    {
+    public void clear() {
         clearHighlight();
         clearSelected();
         linkObjects.clear();
@@ -468,7 +461,6 @@ public class YamlGraph implements HasGraphEventHandler {
         actionObjects.clear();
     }
 
-    SimpleEventBus eventBus=new SimpleEventBus();
     @Override
     public HandlerRegistration addGraphEventHandler(GraphEventHandler handler) {
         return eventBus.addHandler(GraphEvent.TYPE, handler);
@@ -477,5 +469,88 @@ public class YamlGraph implements HasGraphEventHandler {
     @Override
     public void fireEvent(GwtEvent<?> event) {
         eventBus.fireEvent(event);
+    }
+
+    /**
+     * 删除选择的目标对象
+     */
+    public void deleteSelectObjects() {
+        //先删除  link  service network volume
+        if (getSelectObjectList().isEmpty()) {
+            return;
+        }
+        List<ServiceObject> serviceObjectList = new ArrayList<>();
+        List<LinkObject> linkObjectList = new ArrayList<>();
+        List<VolumeObject> volumeObjectList = new ArrayList<>();
+        List<NetworkObject> networkObjectsList = new ArrayList<>();
+        for (RendingObject object : getSelectObjectList()) {
+            if (object instanceof ServiceObject) {
+                serviceObjectList.add((ServiceObject) object);
+            }
+            if (object instanceof NetworkObject) {
+                networkObjectsList.add((NetworkObject) object);
+            }
+            if (object instanceof VolumeObject) {
+                volumeObjectList.add((VolumeObject) object);
+            }
+            if (object instanceof LinkObject) {
+                linkObjectList.add((LinkObject) object);
+            }
+        }
+
+        for (LinkObject linkObject : linkObjectList) {
+            Link link = linkObject.getRefObject();
+            RendingObject<?> linkSource = link.start;
+            RendingObject<?> linkTarget = link.end;
+            //移除link（Link 只需要从一端的节点移除即可）
+            linkSource.removeLink(link.end, true);
+        }
+        linkObjectList.clear();
+        for (ServiceObject serviceObject : serviceObjectList) {
+            //移除所有的链接
+            serviceObject.removeLink(null,true);
+            serviceObjects.remove(serviceObject);
+        }
+        serviceObjectList.clear();
+
+        for (NetworkObject networkObject : networkObjectsList) {
+            //移除所有的链接
+            networkObject.removeLink(null,true);
+            networksObjects.remove(networkObject);
+        }
+        networkObjectsList.clear();
+
+        for (VolumeObject volumeObject : volumeObjectList) {
+            volumeObject.removeLink(null,true);
+            volumeObjects.remove(volumeObject);
+        }
+        volumeObjectList.clear();
+        clearSelected();
+    }
+
+    /**
+     * 移除所有从 sourceObject出发的连接
+     * @param sourceObject
+     */
+    public void removeSourceLinks(RendingObject<?> sourceObject) {
+        linkObjects.removeIf(linkObject -> {
+          return linkObject.getRefObject().start.equals(sourceObject);
+        });
+    }
+
+    /**
+     * 移除所有指向 targetObject的链接
+     * @param targetObject
+     */
+    public void removeTargetLinks(RendingObject<?> targetObject) {
+        linkObjects.removeIf(linkObject -> {
+            if(linkObject.getRefObject().end.equals(targetObject))
+            {
+                //源头需要移除这个链接关联的数据,此操作不负责链接的删除
+                linkObject.getRefObject().start.deleteLinkSource(linkObject);
+                return true;
+            }
+            return false;
+        });
     }
 }

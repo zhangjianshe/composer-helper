@@ -8,5 +8,6 @@ public enum ToolbarCommands {
     CMD_ALIGN_RIGHT,
     CMD_ALIGN_TOP,
     CMD_ALIGN_MIDDLE,
-    CMD_ALIGN_BOTTOM
+    CMD_ALIGN_BOTTOM,
+    CMD_DELETE
 }

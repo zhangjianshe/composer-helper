@@ -20,8 +20,7 @@
     </ui:style>
     <g:HTMLPanel ui:field="root" styleName="{style.box}">
         <g:HTMLPanel styleName="{style.group}">
-            <editor:SvgButton ui:field="btnOpen" />
-            <editor:SvgButton  ui:field="btnSave" />
+            <editor:SvgButton ui:field="btnDelete" />
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

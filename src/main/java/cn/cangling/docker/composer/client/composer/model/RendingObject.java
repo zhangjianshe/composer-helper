@@ -109,6 +109,14 @@ public class RendingObject<T> {
         return getDrawingRect().center();
     }
 
+    /**
+     * 删除链接
+     * @param relativeObject when relativeObject is null , will remove all the links start from this rending object
+     * @param relativeObjectIsEnd
+     */
+    public void removeLink(RendingObject<?> relativeObject, boolean relativeObjectIsEnd) {
+    }
+
     public boolean isSelected() {
         return selected;
     }
@@ -167,5 +175,17 @@ public class RendingObject<T> {
 
     public boolean intersect(Rect rect) {
         return  getDrawingRect().intersect(rect);
+    }
+
+    public void offset(double dx, double dy) {
+        getRect().offset(dx, dy);
+    }
+
+    /**
+     * 删除 link start 对应的数据 不删除链接本身
+     * @param linkObject
+     */
+    public void deleteLinkSource(LinkObject linkObject) {
+        
     }
 }

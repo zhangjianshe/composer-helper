@@ -288,4 +288,11 @@ public class ComposerEditor extends Widget implements RequiresResize, HasGraphEv
             break;
         }
     }
+
+    /**
+     * 删除选择的目标对象
+     */
+    public void deleteSelectObjects() {
+        graph.deleteSelectObjects();
+    }
 }

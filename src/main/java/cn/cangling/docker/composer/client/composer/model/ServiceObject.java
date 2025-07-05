@@ -9,7 +9,6 @@ import java.util.List;
 
 public class ServiceObject extends RendingObject<Service> {
 
-    private final double[] dash = {3, 3};
 
     List<ImageObject<String>> networks;
     List<ImageObject<String>> volumes;
@@ -330,5 +329,100 @@ public class ServiceObject extends RendingObject<Service> {
         }
     }
 
+    @Override
+    public void removeLink(RendingObject<?> relativeObject, boolean relativeObjectIsEnd) {
+        if (relativeObject == null) {
+            //remove all the links
+            getGraph().removeSourceLinks(this);
+            getGraph().removeTargetLinks(this);
+            getRefObject().dependsOn.setLength(0);
+            getRefObject().volumes.setLength(0);
+            getRefObject().networks.setLength(0);
+            return;
+        }
+        if (relativeObjectIsEnd) {
+            Service thisService = getRefObject();
+            if (relativeObject instanceof ServiceObject) {
+                Service targetService = ((ServiceObject) relativeObject).getRefObject();
+                int index = thisService.dependsOn.indexOf(targetService.name);
+                if (index >= 0) {
+                    thisService.dependsOn.splice(index, 1);
+                }
 
+            } else if (relativeObject instanceof NetworkObject) {
+                Network targetNetwork = ((NetworkObject) relativeObject).getRefObject();
+                int index = thisService.networks.indexOf(targetNetwork.name);
+                if (index >= 0) {
+                    thisService.networks.splice(index, 1);
+                }
+            } else if (relativeObject instanceof VolumeObject) {
+                Volume targetVolume = ((VolumeObject) relativeObject).getRefObject();
+                int index = thisService.volumes.indexOf(targetVolume.name);
+                if (index >= 0) {
+                    thisService.volumes.splice(index, 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * 删除 link start 对应的数据 不删除链接本身
+     *
+     * @param linkObject
+     */
+    public void deleteLinkSource(LinkObject linkObject) {
+        Link link = linkObject.getRefObject();
+        RendingObject<?> linkTarget = link.end;
+        if (linkTarget instanceof ServiceObject) {
+            ServiceObject serviceObject = (ServiceObject) linkTarget;
+            switch (link.kind) {
+                case LINK_KIND_DEPENDENCY: {
+                    deleteDependency(serviceObject.getRefObject().name);
+                    break;
+                }
+            }
+        } else if (linkTarget instanceof NetworkObject) {
+            NetworkObject networkObject = (NetworkObject) linkTarget;
+            switch (link.kind) {
+                case LINK_KIND_UNKNOWN:
+                    deleteNetwork(networkObject.getRefObject().name);
+                    break;
+            }
+        } else if (linkTarget instanceof VolumeObject) {
+            VolumeObject volumeObject = (VolumeObject) linkTarget;
+            switch (link.kind) {
+                case LINK_KIND_UNKNOWN:
+                    deleteVolume(volumeObject.getRefObject().name);
+                    break;
+            }
+        }
+
+    }
+
+    private void deleteVolume(String name) {
+        if (name != null && !name.isEmpty()) {
+            int i = getRefObject().volumes.indexOf(name);
+            if (i >= 0) {
+                getRefObject().volumes.splice(i, 1);
+            }
+        }
+    }
+
+    private void deleteNetwork(String name) {
+        if (name != null && !name.isEmpty()) {
+            int i = getRefObject().networks.indexOf(name);
+            if (i >= 0) {
+                getRefObject().networks.splice(i, 1);
+            }
+        }
+    }
+
+    private void deleteDependency(String name) {
+        if (name != null && !name.isEmpty()) {
+            int i = getRefObject().dependsOn.indexOf(name);
+            if (i >= 0) {
+                getRefObject().dependsOn.splice(i, 1);
+            }
+        }
+    }
 }

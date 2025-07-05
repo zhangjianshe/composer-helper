@@ -75,4 +75,13 @@ public class VolumeObject extends RendingObject<Volume> {
         return super.getLinkCenter(relativeObject, relativeObjectIsEnd);
     }
 
+    @Override
+    public void removeLink(RendingObject<?> relativeObject, boolean relativeObjectIsEnd) {
+        if(relativeObject==null)
+        {
+            //移除所有从指向本磁盘的所有链接
+            getGraph().removeTargetLinks(this);
+
+        }
+    }
 }

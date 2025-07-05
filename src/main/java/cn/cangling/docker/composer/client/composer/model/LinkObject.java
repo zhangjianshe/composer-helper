@@ -66,4 +66,9 @@ public class LinkObject extends RendingObject<Link> {
             context2D.restore();
         }
     }
+
+    @Override
+    public void offset(double dx, double dy) {
+        // do nothing link object can not move by mouse drag
+    }
 }

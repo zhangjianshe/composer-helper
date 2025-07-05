@@ -68,6 +68,8 @@
                 <g:HorizontalPanel height="100%"  verticalAlignment="middle"  addStyleNames="{style.bar}">
                     <t:FileToolbar ui:field="fileToolbar"/>
                     <g:Label width="10px"></g:Label>
+                    <t:OperationToolbar ui:field="operationToolbar"/>
+                    <g:Label width="10px"></g:Label>
                     <t:AlignToolbar  ui:field="alignToolbar"/>
                 </g:HorizontalPanel>
             </g:HTMLPanel>

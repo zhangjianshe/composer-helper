@@ -73,4 +73,14 @@ public class NetworkObject extends RendingObject<Network> {
         }
         return super.getLinkCenter(relativeObject, relativeObjectIsEnd);
     }
+
+    @Override
+    public void removeLink(RendingObject<?> relativeObject, boolean relativeObjectIsEnd) {
+        if(relativeObject==null)
+        {
+            //移除所有从指向本网络的所有链接
+            getGraph().removeTargetLinks(this);
+
+        }
+    }
 }

@@ -99,6 +99,9 @@ public interface ComposerResource extends ClientBundle {
     @Source("github.svg")
     TextResource github();
 
+    @Source("delete.svg")
+    TextResource delete();
+
     @Source("default_graph.json")
     TextResource defaultGraph();
 
